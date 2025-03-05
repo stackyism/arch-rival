@@ -50,7 +50,19 @@ export const Arch = () => {
           </div>
         ))}
       </div>
-      <MapSurface solution={solutions[selectedSolutionId]} />
+      <div style={{ flexGrow: 1 }}>
+        <MapSurface solution={solutions[selectedSolutionId]} />
+      </div>
+
+      <div>
+        <div style={{ display: "flex" }}>
+          <button>Intersect</button>
+          <button>Union</button>
+        </div>
+        <div>
+          Total area:
+        </div>
+      </div>
     </div>
   );
 };

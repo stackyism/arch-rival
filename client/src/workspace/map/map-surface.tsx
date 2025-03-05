@@ -8,6 +8,7 @@ import Mapbox, {
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useEffect, useState } from "react";
 import { Solution } from "../../types.ts";
+import { useSelectedFeatures } from "../../store.ts";
 
 const layerStyle: LayerSpecification = {
   id: "solution1",
@@ -44,6 +45,9 @@ export const MapSurface = ({ solution }: { solution: Solution }) => {
       zoom: 14,
     },
   );
+  const { selectedFeatures, addSelectedFeature } = useSelectedFeatures();
+
+  console.log("wow selectedFeatures", selectedFeatures);
 
   useEffect(() => {
     const map = mapRef?.getMap();
@@ -51,8 +55,8 @@ export const MapSurface = ({ solution }: { solution: Solution }) => {
   return (
     <Mapbox
       // https://visgl.github.io/react-map-gl/docs/get-started/mapbox-tokens
-      mapboxAccessToken=""
-      style={{ width: "100vw", height: "100vh" }}
+      mapboxAccessToken={import.meta.env.VITE_MAPBOX_ACCESS_TOKEN}
+      style={{ width: 700, height: 700 }}
       mapStyle="mapbox://styles/mapbox/streets-v9"
       ref={setMapRef}
       // onLoad={() => setLoaded(true)}
@@ -60,6 +64,10 @@ export const MapSurface = ({ solution }: { solution: Solution }) => {
       interactiveLayerIds={["solution1"]}
       {...viewState}
       onClick={(event: MapMouseEvent) => {
+        if (event.features?.length) {
+          event.features[0].id &&
+            addSelectedFeature(Number(event.features[0].id));
+        }
         console.log("wow features", event.features);
       }}
     >
