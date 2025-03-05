@@ -8,7 +8,7 @@ import Mapbox, {
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useEffect, useState } from "react";
 import { Solution } from "../../types.ts";
-import { useSelectedFeatures } from "../../store.ts";
+import { useSelectedPolygons } from "../../store.ts";
 
 const layerStyle: LayerSpecification = {
   id: "solution1",
@@ -22,8 +22,8 @@ const layerStyle: LayerSpecification = {
 };
 
 const layerStyle2: LayerSpecification = {
-  id: "layer2",
-  source: "solution1",
+  id: "selectedPolygons",
+  source: "solution-1.json",
   type: "fill",
   paint: {
     "fill-color": "lightyellow",
@@ -45,9 +45,10 @@ export const MapSurface = ({ solution }: { solution: Solution }) => {
       zoom: 14,
     },
   );
-  const { selectedFeatures, addSelectedFeature } = useSelectedFeatures();
+  const { selectedPolygons, selectPolygon, deselectPolygon } =
+    useSelectedPolygons();
 
-  console.log("wow selectedFeatures", selectedFeatures);
+  console.log("wow selectedPolygons", selectedPolygons);
 
   useEffect(() => {
     const map = mapRef?.getMap();
@@ -65,14 +66,32 @@ export const MapSurface = ({ solution }: { solution: Solution }) => {
       {...viewState}
       onClick={(event: MapMouseEvent) => {
         if (event.features?.length) {
-          event.features[0].id &&
-            addSelectedFeature(Number(event.features[0].id));
+          const selectedFeatureId = event.features[0].id;
+          const clickedPolygon = solution.features.find((feature) =>
+            feature.id === selectedFeatureId
+          );
+          if (clickedPolygon) {
+            if (
+              selectedPolygons.find((polygon) =>
+                polygon.id === clickedPolygon.id
+              )
+            ) {
+              deselectPolygon(clickedPolygon);
+            } else {
+              selectPolygon(clickedPolygon);
+            }
+          }
         }
-        console.log("wow features", event.features);
       }}
     >
       <Source id="solution1" type="geojson" data={solution}>
         <Layer {...layerStyle} />
+      </Source>
+      <Source
+        id="selectedPolygons"
+        type="geojson"
+        data={{ type: "FeatureCollection", features: selectedPolygons }}
+      >
         <Layer {...layerStyle2} />
       </Source>
     </Mapbox>

@@ -1,23 +1,30 @@
 import { create } from "zustand";
+import { SelectedPolygon } from "./types.ts";
 
-type SelectedFeatureStore = {
-  selectedFeatures: number[];
-  addSelectedFeature: (featureId: number) => void;
-  removeSelectedFeature: (featureId: number) => void;
+type SelectedPolygonsStore = {
+  selectedPolygons: SelectedPolygon[];
+  selectPolygon: (polygon: SelectedPolygon) => void;
+  deselectPolygon: (polygon: SelectedPolygon) => void;
+  removeAllSelectedPolygons: () => void;
 };
 
-export const useSelectedFeatures = create<SelectedFeatureStore>((set) => ({
-  selectedFeatures: [],
-  addSelectedFeature: (featureId: number) => {
+export const useSelectedPolygons = create<SelectedPolygonsStore>((set) => ({
+  selectedPolygons: [],
+  selectPolygon: (polygon: SelectedPolygon) => {
     set((state) => ({
-      selectedFeatures: [...state.selectedFeatures, featureId],
+      selectedPolygons: [...state.selectedPolygons, polygon],
     }));
   },
-  removeSelectedFeature: (featureId: number) => {
+  deselectPolygon: (polygon: SelectedPolygon) => {
     set((state) => ({
-      selectedFeatures: state.selectedFeatures.filter(
-        (id) => id !== featureId,
+      selectedPolygons: state.selectedPolygons.filter(
+        (selectedPolygon) => selectedPolygon.id !== polygon.id,
       ),
+    }));
+  },
+  removeAllSelectedPolygons: () => {
+    set(() => ({
+      selectedPolygons: [],
     }));
   },
 }));
