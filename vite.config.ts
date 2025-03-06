@@ -6,7 +6,7 @@ import "react";
 import "react-dom";
 
 export default defineConfig({
-  root: "./client",
+  root: "./",
   server: {
     port: 3000,
   },
