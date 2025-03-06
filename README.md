@@ -1,3 +1,12 @@
+# Assumptions or Caveats
+
+1. We assume that we're going to deal just with Polygon feature types for now.
+   This is the reason that we've stored the store keys as polygons and other
+   actions with polygons named.
+2. We're using polygonId of type number because mapbox on click does not
+   populate feature id in event callback if it is a string
+3. We assumed there's going to be at least 1 solution always
+
 # React Template with Vite and Deno
 
 This is a GitHub template project to set up a [React](https://react.dev/) app

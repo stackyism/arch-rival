@@ -7,11 +7,11 @@ import Mapbox, {
 } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useEffect, useState } from "react";
-import { Solution } from "../../types.ts";
-import { useSelectedPolygons } from "../../store.ts";
+import { useSolutionStore } from "../../store.ts";
+import { featureCollection } from "@turf/helpers";
 
 const layerStyle: LayerSpecification = {
-  id: "solution1",
+  id: "solution-polygons",
   source: "solution-1.json",
   type: "fill",
   paint: {
@@ -22,7 +22,7 @@ const layerStyle: LayerSpecification = {
 };
 
 const layerStyle2: LayerSpecification = {
-  id: "selectedPolygons",
+  id: "selected-polygons",
   source: "solution-1.json",
   type: "fill",
   paint: {
@@ -32,11 +32,19 @@ const layerStyle2: LayerSpecification = {
   },
 };
 
-export const MapSurface = ({ solution }: { solution: Solution }) => {
+export const MapSurface = () => {
   const [mapRef, setMapRef] = useState<MapRef | null>();
-  const [longitude, latitude] = solution.type === "FeatureCollection" &&
-      solution.features[0].geometry.type === "Polygon"
-    ? solution.features[0].geometry.coordinates[0][0]
+  const {
+    getSelectedSolution,
+    getSelectedPolygons,
+    selectPolygon,
+    deselectPolygon,
+  } = useSolutionStore();
+  const solution = getSelectedSolution();
+  const selectedPolygonsIds = solution.selectedPolygonIds;
+  const selectedPolygons = getSelectedPolygons();
+  const [longitude, latitude] = solution.polygons[0].geometry.type === "Polygon"
+    ? solution.polygons[0].geometry.coordinates[0][0]
     : [0, 0];
   const [viewState, setViewState] = useState(
     {
@@ -45,52 +53,41 @@ export const MapSurface = ({ solution }: { solution: Solution }) => {
       zoom: 14,
     },
   );
-  const { selectedPolygons, selectPolygon, deselectPolygon } =
-    useSelectedPolygons();
-
-  console.log("wow selectedPolygons", selectedPolygons);
 
   useEffect(() => {
     const map = mapRef?.getMap();
   }, [mapRef]);
   return (
     <Mapbox
-      // https://visgl.github.io/react-map-gl/docs/get-started/mapbox-tokens
+      {...viewState}
       mapboxAccessToken={import.meta.env.VITE_MAPBOX_ACCESS_TOKEN}
       style={{ width: 700, height: 700 }}
       mapStyle="mapbox://styles/mapbox/streets-v9"
       ref={setMapRef}
-      // onLoad={() => setLoaded(true)}
       onMove={(e: any) => setViewState(e.viewState)}
-      interactiveLayerIds={["solution1"]}
-      {...viewState}
+      interactiveLayerIds={["solution-polygons"]}
       onClick={(event: MapMouseEvent) => {
         if (event.features?.length) {
-          const selectedFeatureId = event.features[0].id;
-          const clickedPolygon = solution.features.find((feature) =>
-            feature.id === selectedFeatureId
-          );
-          if (clickedPolygon) {
-            if (
-              selectedPolygons.find((polygon) =>
-                polygon.id === clickedPolygon.id
-              )
-            ) {
-              deselectPolygon(clickedPolygon);
-            } else {
-              selectPolygon(clickedPolygon);
-            }
+          const selectedPolygonId = Number(event.features[0].id);
+          if (selectedPolygonsIds.includes(selectedPolygonId)) {
+            deselectPolygon(selectedPolygonId);
+          } else {
+            selectPolygon(selectedPolygonId);
           }
         }
       }}
     >
-      <Source id="solution1" type="geojson" data={solution}>
+      <Source
+        id="solution-polygons"
+        type="geojson"
+        data={featureCollection(solution.polygons)}
+      >
         <Layer {...layerStyle} />
       </Source>
       <Source
-        id="selectedPolygons"
+        id="selected-polygons"
         type="geojson"
-        data={{ type: "FeatureCollection", features: selectedPolygons }}
+        data={featureCollection(selectedPolygons)}
       >
         <Layer {...layerStyle2} />
       </Source>
