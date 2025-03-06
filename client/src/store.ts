@@ -6,6 +6,7 @@ import {
   Solution,
   SolutionId,
   SolutionJson,
+  SolutionPolygon,
   SolutionsMap,
 } from "./types.ts";
 import { adaptGeoJsonToSolution } from "./utils/adaptGeoJsonToSolution.ts";
@@ -20,6 +21,7 @@ type SolutionsStore = {
   selectPolygon: (polygonId: PolygonId) => void;
   deselectPolygon: (polygonId: PolygonId) => void;
   selectSolution: (solutionId: SolutionId) => void;
+  replacePolygons: (newPolygon: SolutionPolygon) => void;
   getSelectedSolution: () => Solution;
   getSelectedPolygons: () => Solution["polygons"];
 };
@@ -49,6 +51,18 @@ export const useSolutionStore = create<SolutionsStore>()(devtools(
           .solutions[
             state.selectedSolutionId
           ].selectedPolygonIds.filter((id) => id !== polygonId);
+      });
+    },
+    replacePolygons: (newPolygon: SolutionPolygon) => {
+      set((state) => {
+        const selectedSolution = state.getSelectedSolution();
+        const selectedPolygonIds = selectedSolution.selectedPolygonIds;
+        const updatedPolygons = selectedSolution.polygons.filter((polygon) =>
+          !selectedPolygonIds.includes(polygon.id)
+        );
+        updatedPolygons.push(newPolygon);
+        state.solutions[state.selectedSolutionId].polygons = updatedPolygons;
+        state.solutions[state.selectedSolutionId].selectedPolygonIds = [];
       });
     },
     selectSolution: (solutionId: SolutionId) => {
