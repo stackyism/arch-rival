@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { useSolutionStore } from "../../store.ts";
 import { area } from "@turf/area";
 import { union } from "@turf/union";
@@ -18,14 +19,14 @@ export const InfoToolsPanel = () => {
     featureCollection(unionedPolygon ? [unionedPolygon] : selectedPolygons),
   );
 
-  const handleIntersectPolygons = () => {
+  const handleIntersectPolygons = useCallback(() => {
     const intersectedPolygon = intersect(featureCollection(selectedPolygons));
     if (intersectedPolygon) {
       replacePolygons({ ...intersectedPolygon, id: generateRandomPolygonId() });
     }
-  };
+  }, [selectedPolygons, replacePolygons]);
 
-  const handleUnionPolygons = () => {
+  const handleUnionPolygons = useCallback(() => {
     if (unionedPolygon) {
       replacePolygons(
         {
@@ -34,13 +35,34 @@ export const InfoToolsPanel = () => {
         },
       );
     }
-  };
+  }, [unionedPolygon, replacePolygons]);
+
+  const areActionsDisabled = selectedPolygons.length < 2;
 
   return (
     <div>
-      <div style={{ display: "flex" }}>
-        <button onClick={handleIntersectPolygons}>Intersect</button>
-        <button onClick={handleUnionPolygons}>Union</button>
+      <p>Please select at least 2 polygons to activate actions</p>
+      <div className="flex gap-1">
+        <button
+          type="button"
+          className="outline"
+          aria-label="Intersect selected polygons"
+          disabled={areActionsDisabled}
+          onClick={handleIntersectPolygons}
+          data-tooltip="This will create a new polygon with the intersection of the selected polygons"
+        >
+          Intersect
+        </button>
+        <button
+          type="button"
+          className="outline"
+          aria-label="Union selected polygons"
+          disabled={areActionsDisabled}
+          onClick={handleUnionPolygons}
+          data-tooltip="This will create a new polygon with the union of the selected polygons"
+        >
+          Union
+        </button>
       </div>
       {totalArea
         ? (

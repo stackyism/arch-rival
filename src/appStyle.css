@@ -1,0 +1,17 @@
+.flex {
+  display: flex;
+}
+
+.flex-1 {
+  flex: 1 1 0;
+}
+
+.gap-1 {
+  gap: 1rem;
+}
+
+.map-surface {
+  width: 600px;
+  height: 600px;
+  flex: 1 1 auto;
+}
