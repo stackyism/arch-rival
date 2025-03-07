@@ -1,9 +1,9 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { Arch } from "./Arch.tsx";
+import { ArchitectSolutionsManager } from "./architect-solutions-manager.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <Arch />
+    <ArchitectSolutionsManager />
   </StrictMode>,
 );

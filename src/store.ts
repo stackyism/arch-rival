@@ -15,16 +15,27 @@ import { uuid } from "./utils/uuid.ts";
 import solution1 from "../data/solution-1.json";
 import solution2 from "../data/solution-2.json";
 
-type SolutionsStore = {
+type State = {
   solutions: SolutionsMap;
   selectedSolutionId: SolutionId;
+};
+
+type PolygonAction = {
   selectPolygon: (polygonId: PolygonId) => void;
   deselectPolygon: (polygonId: PolygonId) => void;
-  selectSolution: (solutionId: SolutionId) => void;
   replacePolygons: (newPolygon: SolutionPolygon) => void;
-  getSelectedSolution: () => Solution;
   getSelectedPolygons: () => Solution["polygons"];
 };
+
+type SolutionAction = {
+  selectSolution: (solutionId: SolutionId) => void;
+  getSelectedSolution: () => Solution;
+};
+
+type Actions = PolygonAction & SolutionAction;
+
+type SolutionsStore = State & Actions;
+
 const initialSolutionId = uuid();
 
 export const useSolutionStore = create<SolutionsStore>()(devtools(
@@ -37,6 +48,10 @@ export const useSolutionStore = create<SolutionsStore>()(devtools(
       [uuid(), adaptGeoJsonToSolution(solution2 as SolutionJson, "Solution 2")],
     ]),
     selectedSolutionId: initialSolutionId,
+    getSelectedSolution: () => {
+      const state = get();
+      return state.solutions[state.selectedSolutionId];
+    },
     selectPolygon: (polygonId: PolygonId) => {
       set((state) => {
         state.solutions[state.selectedSolutionId].selectedPolygonIds = [
@@ -69,10 +84,6 @@ export const useSolutionStore = create<SolutionsStore>()(devtools(
       set((state) => {
         state.selectedSolutionId = solutionId;
       });
-    },
-    getSelectedSolution: () => {
-      const state = get();
-      return state.solutions[state.selectedSolutionId];
     },
     getSelectedPolygons: () => {
       const state = get();
