@@ -6,6 +6,7 @@ import "react";
 import "react-dom";
 
 export default defineConfig({
+  base: "/arch-rival",
   root: "./",
   server: {
     port: 3000,
