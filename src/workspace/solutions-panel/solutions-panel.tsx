@@ -8,9 +8,9 @@ export const SolutionsPanel = () => {
   const selectSolution = useSolutionStore((state) => state.selectSolution);
   const solutionIds = Object.keys(solutions);
   return (
-    <div>
+    <>
       {solutionIds.map((id) => (
-        <div key={id} style={{ display: "flex" }}>
+        <div key={id}>
           <input
             id={id}
             type="radio"
@@ -19,9 +19,11 @@ export const SolutionsPanel = () => {
             checked={selectedSolutionId === id}
             onChange={() => selectSolution(id)}
           />
-          <label htmlFor={id}>{solutions?.[id]?.name}</label>
+          <label htmlFor={id}>
+            <small>{solutions?.[id]?.name}</small>
+          </label>
         </div>
       ))}
-    </div>
+    </>
   );
 };

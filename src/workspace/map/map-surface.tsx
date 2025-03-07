@@ -6,7 +6,7 @@ import Mapbox, {
   ViewStateChangeEvent,
 } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useSolutionStore } from "../../store.ts";
 import { featureCollection } from "@turf/helpers";
 import { baseLayer, interactiveLayerIds, selectedLayer } from "./layers.ts";
@@ -47,11 +47,18 @@ export const MapSurface = () => {
     [],
   );
 
+  // keep the center of map udpated according to available polygons
+  useEffect(() => {
+    setViewState((prev) => {
+      const [longitude, latitude] = getCenterCooridnates(solution.polygons);
+      return { ...prev, longitude, latitude };
+    });
+  }, [solution.polygons]);
+
   return (
     <Mapbox
       {...viewState}
       mapboxAccessToken={import.meta.env.VITE_MAPBOX_ACCESS_TOKEN}
-      style={{ width: 700, height: 700 }}
       mapStyle="mapbox://styles/mapbox/streets-v9"
       onMove={handleMapMove}
       interactiveLayerIds={interactiveLayerIds}
