@@ -1,8 +1,12 @@
-## Architect Solutions Manager
+# Architect Solutions Manager
 
 This is a solutions manager app. Every solutions corresponds to a geojson
 consisting polygons which gets loaded on map surface. On the right, you have
 Tools & Statistics Panel.
+
+## Checkout
+
+[Live App](https://stakhi.me/arch-rival/)
 
 You can take a few actions such as:
 
@@ -11,7 +15,7 @@ You can take a few actions such as:
 3. Intersect or Union the selected Polygons
 4. Observe the total area of selected Polygons
 
-# Assumptions or Caveats
+## Assumptions or Caveats
 
 1. We assume that we're going to deal just with Polygon feature types for now.
    This is the reason that we've stored the store keys as polygons and other
@@ -35,6 +39,16 @@ data
 public
    ├── x.svg - public resources
 ```
+
+## Tech Stack
+
+1. [Mapbox](https://visgl.github.io/react-map-gl/): To render the geojson and
+   allow interactiosn with polygons
+2. [Turf.js](https://turfjs.org/): To do operations on polygon such as union,
+   intersect, etc.
+3. [Zustand](https://github.com/pmndrs/zustand): To hold and manipulate the
+   state of the application
+4. [Vite](https://vite.dev/): Build tool for frontend app
 
 ## Getting Started
 
@@ -72,25 +86,6 @@ To build the app for production, run the following command:
 ```sh
 deno run build
 ```
-
-## Running Tests
-
-To run the tests, use the following command:
-
-```sh
-deno test -A
-```
-
-## Deploying
-
-You can deploy the app with [Deno Deploy](https://dash.deno.com/new_project).
-
-1. Link your github account
-2. Select the repository
-3. Give the project a name
-4. Set the "Build Step" to `deno task build`
-5. Set the entry point to `./server/main.ts`
-6. Click 'deploy project'
 
 ## License
 
