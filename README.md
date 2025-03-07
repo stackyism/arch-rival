@@ -8,6 +8,10 @@ Tools & Statistics Panel.
 
 [Live App](https://stakhi.me/arch-rival/)
 
+<img width="1512" alt="Screenshot 2025-03-07 at 03 12 16" src="https://github.com/user-attachments/assets/44377fa9-0813-4948-815c-f0c3a2570eca" />
+
+
+
 You can take a few actions such as:
 
 1. Switch between solutions.
